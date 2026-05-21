@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "SxLL/I8fb7M=",
+  "dgSpecHash": "yy999hAKWhQ=",
   "success": true,
-  "projectFilePath": "C:\\Sowmya\\Practice\\Project\\student-dotnet\\studentapi\\StudentApi.csproj",
+  "projectFilePath": "C:\\Sowmya\\Practice\\Project\\student-dotnet\\StudentApi\\StudentApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\sdkurupudi\\.nuget\\packages\\bcrypt.net-next\\4.2.0\\bcrypt.net-next.4.2.0.nupkg.sha512",
     "C:\\Users\\sdkurupudi\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

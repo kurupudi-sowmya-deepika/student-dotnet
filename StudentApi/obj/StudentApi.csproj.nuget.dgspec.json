@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Sowmya\\Practice\\Project\\student-dotnet\\studentapi\\StudentApi.csproj": {}
+    "C:\\Sowmya\\Practice\\Project\\student-dotnet\\StudentApi\\StudentApi.csproj": {}
   },
   "projects": {
-    "C:\\Sowmya\\Practice\\Project\\student-dotnet\\studentapi\\StudentApi.csproj": {
+    "C:\\Sowmya\\Practice\\Project\\student-dotnet\\StudentApi\\StudentApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Sowmya\\Practice\\Project\\student-dotnet\\studentapi\\StudentApi.csproj",
+        "projectUniqueName": "C:\\Sowmya\\Practice\\Project\\student-dotnet\\StudentApi\\StudentApi.csproj",
         "projectName": "StudentApi",
-        "projectPath": "C:\\Sowmya\\Practice\\Project\\student-dotnet\\studentapi\\StudentApi.csproj",
+        "projectPath": "C:\\Sowmya\\Practice\\Project\\student-dotnet\\StudentApi\\StudentApi.csproj",
         "packagesPath": "C:\\Users\\sdkurupudi\\.nuget\\packages\\",
-        "outputPath": "C:\\Sowmya\\Practice\\Project\\student-dotnet\\studentapi\\obj\\",
+        "outputPath": "C:\\Sowmya\\Practice\\Project\\student-dotnet\\StudentApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
