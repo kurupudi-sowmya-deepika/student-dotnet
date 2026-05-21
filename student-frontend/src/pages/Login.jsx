@@ -19,7 +19,7 @@ export default function Login() {
       login(data)
       navigate('/students')
     } catch (err) {
-      setError(err.response?.data || 'Invalid email or password.')
+      setError(err.response?.data?.message || err.response?.data || 'Invalid email or password.')
     } finally {
       setLoading(false)
     }
@@ -43,7 +43,10 @@ export default function Login() {
             />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label>Password</label>
+              <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--primary)' }}>Forgot password?</Link>
+            </div>
             <input
               type="password"
               placeholder="••••••••"

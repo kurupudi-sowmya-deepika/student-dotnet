@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using StudentApi.Data;
+using StudentApi.Models;
 using StudentApi.Services;
 using System.Text;
 
@@ -46,6 +47,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // ── Auth Services ─────────────────────────────────────────────────────────────
 // Scoped: one AuthService instance per HTTP request (correct for DB-backed services)
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
 
 // ── JWT Authentication ────────────────────────────────────────────────────────
 // Reads JwtSettings from appsettings.json and configures the middleware to validate
@@ -74,12 +76,38 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5173")
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "http://localhost:5175")
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
 
 var app = builder.Build();
+
+// Automatically create database and tables on startup if they don't exist
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.EnsureCreated();
+
+    // Ensure the Students table exists if the database file was created before we added the table to schema
+    dbContext.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS Students (" +
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        "name TEXT, " +
+        "age INTEGER NOT NULL, " +
+        "course TEXT);"
+    );
+
+    // Seed default student data if the database table is empty
+    if (!dbContext.Students.Any())
+    {
+        dbContext.Students.AddRange(
+            new Student { name = "Sowmya", age = 22, course = "Btech" },
+            new Student { name = "Deepika", age = 21, course = "Bcom" }
+        );
+        dbContext.SaveChanges();
+    }
+}
 
 // ── HTTP Pipeline ─────────────────────────────────────────────────────────────
 if (app.Environment.IsDevelopment())

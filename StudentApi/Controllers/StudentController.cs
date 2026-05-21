@@ -10,15 +10,25 @@ namespace StudentApi.Controllers;
 [Authorize]  // Every endpoint in this controller requires a valid JWT token
 public class StudentController : ControllerBase
 {
+    private readonly IStudentService _studentService;
+
+    public StudentController(IStudentService studentService)
+    {
+        _studentService = studentService;
+    }
+
     // GET /student  — Any authenticated user (Admin or User) can read the list
     [HttpGet]
-    public ActionResult<List<Student>> GetAll() => StudentService.GetAll();
+    public async Task<ActionResult<List<Student>>> GetAll()
+    {
+        return await _studentService.GetAllAsync();
+    }
 
     // GET /student/{id}  — Any authenticated user can read a single student
     [HttpGet("{id}")]
-    public ActionResult<Student> Get(int id)
+    public async Task<ActionResult<Student>> Get(int id)
     {
-        var student = StudentService.Get(id);
+        var student = await _studentService.GetAsync(id);
         if (student == null)
             return NotFound();
         return student;
@@ -27,38 +37,38 @@ public class StudentController : ControllerBase
     // POST /student  — Only Admin role can create students
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public IActionResult Create(Student student)
+    public async Task<IActionResult> Create(Student student)
     {
-        StudentService.Add(student);
+        await _studentService.AddAsync(student);
         return CreatedAtAction(nameof(Get), new { id = student.id }, student);
     }
 
     // PUT /student  — Only Admin role can update students
     [HttpPut]
     [Authorize(Roles = "Admin")]
-    public IActionResult Update(int id, Student student)
+    public async Task<IActionResult> Update(int id, Student student)
     {
         if (id != student.id)
             return BadRequest();
 
-        var existingStudent = StudentService.Get(id);
+        var existingStudent = await _studentService.GetAsync(id);
         if (existingStudent == null)
             return NotFound();
 
-        StudentService.Update(student);
+        await _studentService.UpdateAsync(student);
         return NoContent();
     }
 
     // DELETE /student  — Only Admin role can delete students
     [HttpDelete]
     [Authorize(Roles = "Admin")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var existingStudent = StudentService.Get(id);
+        var existingStudent = await _studentService.GetAsync(id);
         if (existingStudent == null)
             return NotFound();
 
-        StudentService.Delete(id);
+        await _studentService.DeleteAsync(id);
         return NoContent();
     }
 }

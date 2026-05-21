@@ -14,12 +14,19 @@ export default function Register() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    const email = form.email.trim().toLowerCase()
+    if (!email.endsWith('@intuceo.com')) {
+      setError('Email must belong to the @intuceo.com domain.')
+      setLoading(false)
+      return
+    }
+
     try {
       const { data } = await api.post('/auth/register', form)
       login(data)
       navigate('/students')
     } catch (err) {
-      setError(err.response?.data || 'Registration failed. Email may already be in use.')
+      setError(err.response?.data?.message || err.response?.data || 'Registration failed. Email may already be in use.')
     } finally {
       setLoading(false)
     }

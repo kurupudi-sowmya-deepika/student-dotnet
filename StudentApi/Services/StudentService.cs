@@ -1,60 +1,54 @@
+using Microsoft.EntityFrameworkCore;
+using StudentApi.Data;
 using StudentApi.Models;
-// import student model
 
 namespace StudentApi.Services;
 
-//  static - no objection creation required , methods can be called directly
+public class StudentService : IStudentService
+{
+    private readonly AppDbContext _context;
 
-public static class StudentService{
-    static List<Student> Students {get;}
-    static int nextId=3;
+    public StudentService(AppDbContext context)
+    {
+        _context = context;
+    }
 
-    static StudentService(){  // static constructor
-        Students = new List<Student>
+    // Get all students from database
+    public async Task<List<Student>> GetAllAsync()
+    {
+        return await _context.Students.ToListAsync();
+    }
+
+    // Get a specific student by ID
+    public async Task<Student?> GetAsync(int id)
+    {
+        return await _context.Students.FindAsync(id);
+    }
+
+    // Add a new student to database
+    public async Task AddAsync(Student student)
+    {
+        // Set id to 0 to let SQLite auto-generate it (primary key autoincrement)
+        student.id = 0;
+        _context.Students.Add(student);
+        await _context.SaveChangesAsync();
+    }
+
+    // Update an existing student's details
+    public async Task UpdateAsync(Student student)
+    {
+        _context.Students.Update(student);
+        await _context.SaveChangesAsync();
+    }
+
+    // Delete a student from database
+    public async Task DeleteAsync(int id)
+    {
+        var student = await GetAsync(id);
+        if (student != null)
         {
-            new Student
-            {
-                id=1,
-                name="Sowmya",
-                age=22,
-                course="Btech"
-
-            },
-            new Student
-            {
-                id=2,
-                name="Deepika",
-                age=21,
-                course="Bcom"
-
-            }
-        };
-    }
-    // get all students list
-    public static List <Student> GetAll() =>Students;
-
-    // get student details by id
-    public static Student? Get(int id)=>
-        Students.FirstOrDefault(s=>s.id ==id);
-
-    public static void Add (Student student){
-        student.id =nextId++;
-        Students.Add(student);
-    }
-
-    public static void Update (Student student){
-        var index = Students.FindIndex(s=>s.id == student.id);
-        if (index == -1)
-            return ;
-        Students[index]=student;
-    }
-
-    public static void Delete(int id){
-        var Student = Get(id);
-        if (Student == null){
-            return;
+            _context.Students.Remove(student);
+            await _context.SaveChangesAsync();
         }
-        Students.Remove(Student);
     }
-
 }

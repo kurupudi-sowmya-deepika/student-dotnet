@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
 import Students from './pages/Students'
 import './index.css'
 
@@ -17,6 +18,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/students" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/students"
               element={

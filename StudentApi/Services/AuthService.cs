@@ -23,14 +23,21 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto?> Register(RegisterDto dto)
     {
+        var email = dto.Email.Trim().ToLowerInvariant();
+
+        if (!email.EndsWith("@intuceo.com"))
+        {
+            throw new ArgumentException("Email must belong to the @intuceo.com domain.");
+        }
+
         // Prevent duplicate accounts — email must be unique
-        if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-            return null;
+        if (await _context.Users.AnyAsync(u => u.Email == email))
+            throw new InvalidOperationException("Email already exists.");
 
         var user = new User
         {
             Username = dto.Username,
-            Email = dto.Email,
+            Email = email,
             // BCrypt hashes the password with a random salt — never store plain text
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Role = "User" // All new users get the "User" role by default
@@ -44,13 +51,33 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto?> Login(LoginDto dto)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        var email = dto.Email.Trim().ToLowerInvariant();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User does not exist. Please sign up first.");
+        }
 
         // BCrypt.Verify compares plain-text password against stored hash securely
-        if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            return null;
+        if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+        {
+            throw new UnauthorizedAccessException("Invalid email or password.");
+        }
 
         return BuildResponse(user);
+    }
+
+    public async Task<bool> ForgotPassword(ForgotPasswordDto dto)
+    {
+        var email = dto.Email.Trim().ToLowerInvariant();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (user == null)
+            return false;
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     private AuthResponseDto BuildResponse(User user) => new()
