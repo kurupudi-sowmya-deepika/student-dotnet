@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentApi.Models.DTOs;
 using StudentApi.Services;
@@ -65,5 +66,36 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "User with this email does not exist." });
 
         return Ok(new { message = "Password updated successfully." });
+    }
+
+    // GET /auth/users
+    // Retrieves a list of all registered users. Restricted to Admin role.
+    [HttpGet("users")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = await _authService.GetAllUsers();
+        return Ok(users);
+    }
+
+    // PUT /auth/update-role
+    // Updates a user's role. Restricted to Admin role.
+    [HttpPut("update-role")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateUserRole(UpdateRoleDto dto)
+    {
+        try
+        {
+            var success = await _authService.UpdateUserRole(dto);
+            if (!success)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+            return Ok(new { message = "Role updated successfully." });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }

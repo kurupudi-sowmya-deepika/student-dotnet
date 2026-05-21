@@ -15,10 +15,10 @@ export default function Students() {
   const [saving, setSaving] = useState(false)
 
   const fetchStudents = async () => {
-    setError('')
     try {
       const { data } = await api.get('/student')
       setStudents(data)
+      setError('')
     } catch {
       setError('Failed to fetch students.')
     } finally {

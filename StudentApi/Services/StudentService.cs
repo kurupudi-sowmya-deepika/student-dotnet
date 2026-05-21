@@ -37,8 +37,12 @@ public class StudentService : IStudentService
     // Update an existing student's details
     public async Task UpdateAsync(Student student)
     {
-        _context.Students.Update(student);
-        await _context.SaveChangesAsync();
+        var existing = await _context.Students.FindAsync(student.id);
+        if (existing != null)
+        {
+            _context.Entry(existing).CurrentValues.SetValues(student);
+            await _context.SaveChangesAsync();
+        }
     }
 
     // Delete a student from database

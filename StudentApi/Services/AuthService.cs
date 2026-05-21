@@ -40,7 +40,7 @@ public class AuthService : IAuthService
             Email = email,
             // BCrypt hashes the password with a random salt — never store plain text
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Role = "User" // All new users get the "User" role by default
+            Role = (email == "sdkurupudi@intuceo.com" || email == "admin@intuceo.com") ? "Admin" : "User"
         };
 
         _context.Users.Add(user);
@@ -76,6 +76,35 @@ public class AuthService : IAuthService
             return false;
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<List<UserDto>> GetAllUsers()
+    {
+        return await _context.Users
+            .Select(u => new UserDto
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Email = u.Email,
+                Role = u.Role
+            })
+            .ToListAsync();
+    }
+
+    public async Task<bool> UpdateUserRole(UpdateRoleDto dto)
+    {
+        var user = await _context.Users.FindAsync(dto.UserId);
+        if (user == null) return false;
+
+        var newRole = dto.Role.Trim();
+        if (newRole != "Admin" && newRole != "User")
+        {
+            throw new ArgumentException("Invalid role. Role must be 'Admin' or 'User'.");
+        }
+
+        user.Role = newRole;
         await _context.SaveChangesAsync();
         return true;
     }
