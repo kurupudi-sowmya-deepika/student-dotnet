@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { AuthContext } from './AuthContext'
 
 export function AuthProvider({ children }) {
@@ -20,12 +20,18 @@ export function AuthProvider({ children }) {
     setUser(userData)
   }
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     setToken(null)
     setUser(null)
-  }
+  }, [])
+
+  // Auto-logout when server is stopped or token expires (fired by axios interceptor)
+  useEffect(() => {
+    window.addEventListener('auth:logout', logout)
+    return () => window.removeEventListener('auth:logout', logout)
+  }, [logout])
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout, isAdmin: user?.role === 'Admin' }}>

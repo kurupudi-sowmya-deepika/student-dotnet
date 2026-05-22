@@ -8,4 +8,37 @@ Accept: application/json
 GET {{StudentApi_HostAddress}}/student/
 Accept: application/json
 
+GET {{StudentApi_HostAddress}}/student/{{id}}
+Accept: application/json
+
+### 
+
+POST {{StudentApi_HostAddress}}/student/
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name":"John",
+    "age":20,
+    "course":"Java"
+}
+
+###
+
+PUT {{StudentApi_HostAddress}}/student/{{id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name":"John",
+    "age":20,
+    "course":"Java"
+}
+
+### 
+
+DELETE {{StudentApi_HostAddress}}/student/{{id}}
+Accept: application/json    
+
+
 
